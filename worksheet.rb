@@ -1,39 +1,3 @@
-########################################################
-# Step 1: Establish the layers
-
-# In this section of the file, as a series of comments,
-# create a list of the layers you identify.
-# Which layers are nested in each other?
-# Which layers of data "have" within it a different layer?
-# Which layers are "next" to each other?
-
-########################################################
-# Step 2: Assign a data structure to each layer
-
-# Copy your list from above, and in this section
-# determine what data structure each layer should have
-
-########################################################
-# Step 3: Make the data structure!
-
-# Setup the entire data structure:
-# based off of the notes you have above, create the
-# and manually write in data presented in rides.csv
-# You should be copying and pasting the literal data
-# into this data structure, such as "DR0004"
-# and "3rd Feb 2016" and "RD0022"
-
-########################################################
-# Step 4: Total Driver's Earnings and Number of Rides
-
-# Use an iteration blocks to print the following answers:
-# - the number of rides each driver has given
-# - the total amount of money each driver has made
-# - the average rating for each driver
-# - Which driver made the most money?
-# - Which driver has the highest average rating?
-#
-
 drivers = {"DR0001": {
                         "3rd Feb 2016": [
                             {cost: 10, rider_id: "RD0003", rating: 3},
@@ -75,126 +39,83 @@ drivers = {"DR0001": {
                       }
           }
 
-#The number of rides each driver has given
-def rides(drivers)
-  drivers.each do |driver, data|
-    puts "\nDriver #{driver} has given:"
-    data.each do |key, value|
-      day = key
-      rides_per_day = value.length
-      if rides_per_day == 1
-        puts "#{rides_per_day} ride on #{day}."
-      else
-        puts "#{rides_per_day} rides on #{day}."
-      end
-    end
-  end
-end
-
-rides(drivers)
-
-#The total amount of money each driver has made
-def total_earnings(drivers)
-  drivers.each do |driver, data|
-    earnings = []
-    print "Total earned by #{driver} was $"
-    data.map do |day, rides|
-      rides.each do |ride|
-        earnings.push ride[:cost]
-      end
-    end
-    print " #{earnings.sum}\n"
-  end
-end
-
-puts "\n"
-total_earnings(drivers)
-
-#The average rating for each driver
-def average_rating(drivers)
-  drivers.each do |driver, data|
-    average = []
-    print "Driver #{driver} average rating: "
-    data.map do |day, rides|
-      rides.each do |ride|
-        rates = []
-        rates.push ride[:rating]
-        average.push rates.sum
-      end
-    end
-    printf("%.1f\n", average.sum.to_f / average.length)
-
-  end
-end
-
-puts "\n"
-average_rating(drivers)
-
-#Which driver made the most money?
+#Q4
 def richest(drivers)
   earnings = []
   drivers.each do |driver, data|
     total = []
-    data.map do |day, rides|
+    data.each do |day, rides|
       rides.each do |ride|
         total.push ride[:cost]
       end
-
     end
     earnings.push total.sum
-
+    if total.sum == earnings.max
+      puts "\nDriver #{driver} made the most money for the period."
+    end
   end
-  print earnings.max
 end
 
-puts "\n"
-richest(drivers)
-
-#Which driver has the highest average rating?
-
+#Q5
 def best_rating(drivers)
   highest_average = []
+  which_driver = []
   drivers.each do |driver, data|
     av_rates = []
-    data.map do |day, rides|
+    data.each do |day, rides|
       rides.each do |ride|
         av_rates.push ride[:rating]
       end
     end
-    highest_average.push av_rates.sum
-
+    which_driver.push driver
+    highest_average.push av_rates.sum.to_f / av_rates.length
   end
-  printf("%.1f\n", highest_average.max)
+  if highest_average.include?(highest_average.max)
+    who = highest_average.index(highest_average.max)
+    puts "Driver #{which_driver[who]} has the highest average rating."
+  end
 end
 
-puts "\n"
-best_rating(drivers)
-
-
-#For each driver, on which day did they make the most money?
-def most_money(drivers)
-
+#All questions answered
+def ride_share(drivers)
   drivers.each do |driver, data|
-    cash = []
-    which_day = []
-    data.map do |day, rides|
+    d1 = drivers[driver] #Q3
+    earnings = [] # Q2
+    cash = [] #Optional
+    which_day = [] #Optional
+    rides_num = []# Q1
+    puts "\nDriver #{driver} summary:" #Q1
+
+    data.each do |day, rides|
+      rides_num.push rides.length
       total = []
+
       rides.each do |ride|
+        earnings.push ride[:cost]
         total.push ride[:cost]
+        rates = []
+        rates.push ride[:rating]
       end
 
       cash.push total.sum
       which_day.push day
     end
 
-    if cash.include?(cash.max)
+    puts "*Total rides: #{rides_num.sum}" #Q1
+    puts "*Total earnings: $#{earnings.sum}" #Q2
+
+    #Q3
+    ratings = d1.map {|k,v| v }.flatten.map {|x| x[:rating]}
+    print "*Average rating: "
+    printf("%.1f ", ratings.sum.to_f / ratings.length)
+
+    if cash.include?(cash.max) #Optional
       where = cash.index(cash.max)
-      puts "On #{which_day[where]}, driver #{driver} made the most money."
-      puts cash.max
+      puts "\n*Most profitable day: #{which_day[where]}."
     end
   end
-
+  richest(drivers) #Q4
+  best_rating(drivers)#Q5
 end
 
-puts "\n"
-most_money(drivers)
+ride_share(drivers)
